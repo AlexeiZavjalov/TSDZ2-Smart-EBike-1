@@ -80,7 +80,7 @@
 #define PWM_DUTY_CYCLE_RAMP_DOWN_INVERSE_STEP_MIN			(uint8_t)(PWM_CYCLES_SECOND/1953)
 #define CRUISE_DUTY_CYCLE_RAMP_UP_INVERSE_STEP				(uint8_t)(PWM_CYCLES_SECOND/78)
 #define WALK_ASSIST_DUTY_CYCLE_RAMP_UP_INVERSE_STEP			(uint8_t)(PWM_CYCLES_SECOND/78)
-#define THROTTLE_DUTY_CYCLE_RAMP_UP_INVERSE_STEP_DEFAULT	(uint8_t)(PWM_CYCLES_SECOND/116)
+#define THROTTLE_DUTY_CYCLE_RAMP_UP_INVERSE_STEP_DEFAULT	(uint8_t)(PWM_CYCLES_SECOND/78)
 #define THROTTLE_DUTY_CYCLE_RAMP_UP_INVERSE_STEP_MIN		(uint8_t)(PWM_CYCLES_SECOND/390)
 
 #define MOTOR_OVER_SPEED_ERPS								((PWM_CYCLES_SECOND/29) < 650 ?  (PWM_CYCLES_SECOND/29) : 650) // motor max speed | 29 points for the sinewave at max speed (less than PWM_CYCLES_SECOND/29)
@@ -283,7 +283,7 @@ HALL_COUNTER_OFFSET_UP:    29 -> 44
 #define RX_STX										0x59
 
 // parameters for display data
-#if UNITS_TYPE          // 1 = mph and miles
+#if UNITS_TYPE          // 1 mph and miles
 #define OEM_WHEEL_FACTOR							900
 #else                   // 0 = km/h and kilometer
 #define OEM_WHEEL_FACTOR							1435
@@ -291,6 +291,9 @@ HALL_COUNTER_OFFSET_UP:    29 -> 44
 #define MILES										1
 
 #define DATA_INDEX_ARRAY_DIM						6
+
+// delay lights function (0.1 sec)
+#define DELAY_LIGHTS_ON					 	DELAY_MENU_ON
 
 // delay function status (0.1 sec)
 #define DELAY_FUNCTION_STATUS			(uint8_t) (DELAY_MENU_ON / 2)
@@ -312,14 +315,13 @@ HALL_COUNTER_OFFSET_UP:    29 -> 44
 
 // assist pedal level mask
 #define ASSIST_PEDAL_LEVEL0							0x10
+#define ASSIST_PEDAL_LEVEL01						0x80
 #define ASSIST_PEDAL_LEVEL1							0x40
 #define ASSIST_PEDAL_LEVEL2							0x02
 #define ASSIST_PEDAL_LEVEL3							0x04
 #define ASSIST_PEDAL_LEVEL4							0x08
-#define ASSIST_PEDAL_LEVEL5							0x80
-// assist pedal level 5
-#define BEFORE_ECO									1
-#define AFTER_TURBO									2
+
+#define ASSIST_PEDAL_LEVEL01_PERCENT				60
 
 // assist mode
 #define OFFROAD_MODE								0
@@ -331,19 +333,6 @@ HALL_COUNTER_OFFSET_UP:    29 -> 44
 #define NO_FAULT									0
 #define NO_ERROR                                  	0 
 
-// error codes
-#if ENABLE_EKD01
-#define ERROR_OVERVOLTAGE							1  // E01
-#define ERROR_TORQUE_SENSOR							2  // E02
-#define ERROR_CADENCE_SENSOR						13 // E13 instead of E03
-#define ERROR_MOTOR_BLOCKED							4  // E04
-#define ERROR_THROTTLE								10 // E10 instead of E05
-#define ERROR_OVERTEMPERATURE						6  // E06
-#define ERROR_BATTERY_OVERCURRENT					7  // E07
-#define ERROR_SPEED_SENSOR 							3  // E14 instead of E08
-#define ERROR_WRITE_EEPROM 							9  // E09 shared
-#define ERROR_MOTOR_CHECK 							9  // E09 shared
-#else
 #define ERROR_OVERVOLTAGE							1 // E01 (E06 blinking for XH18)
 #define ERROR_TORQUE_SENSOR                       	2 // E02
 #define ERROR_CADENCE_SENSOR			          	3 // E03
@@ -354,7 +343,6 @@ HALL_COUNTER_OFFSET_UP:    29 -> 44
 #define ERROR_SPEED_SENSOR							8 // E08
 #define ERROR_WRITE_EEPROM  					  	9 // E09 shared (E08 blinking for XH18)
 #define ERROR_MOTOR_CHECK                       	9 // E09 shared (E08 blinking for XH18)
-#endif
 
 // optional ADC function
 #if ENABLE_TEMPERATURE_LIMIT && ENABLE_THROTTLE
@@ -418,7 +406,7 @@ HALL_COUNTER_OFFSET_UP:    29 -> 44
 #define BATTERY_SOC_VOLTS_2_X10			(uint16_t)(BATTERY_CELLS_NUMBER * ((float)LI_ION_CELL_VOLTS_2_OF_4 * 10))
 #define BATTERY_SOC_VOLTS_1_X10			(uint16_t)(BATTERY_CELLS_NUMBER * ((float)LI_ION_CELL_VOLTS_1_OF_4 * 10))
 #define BATTERY_SOC_VOLTS_0_X10			(uint16_t)(BATTERY_CELLS_NUMBER * ((float)LI_ION_CELL_VOLTS_EMPTY * 10))
-#else // ENABLE_VLCD5 or ENABLE_850C or ENABLE_EKD01
+#else // ENABLE_VLCD5 or 850C
 #define LI_ION_CELL_VOLTS_8_X100		(uint16_t)((float)LI_ION_CELL_OVERVOLT * 100)
 #define LI_ION_CELL_VOLTS_7_X100		(uint16_t)((float)LI_ION_CELL_RESET_SOC_PERCENT * 100)
 #define LI_ION_CELL_VOLTS_6_X100		(uint16_t)((float)LI_ION_CELL_VOLTS_FULL * 100)
@@ -481,5 +469,7 @@ HALL_COUNTER_OFFSET_UP:    29 -> 44
 #define ZERO_ODOMETER_COMPENSATION				100000000
 
 #define ASSISTANCE_WITH_ERROR_ENABLED			0
+
+#define AVAIABLE_FOR_FUTURE_USE					0 // EEPROM
 
 #endif // MAIN_H_
